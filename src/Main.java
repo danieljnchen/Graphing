@@ -22,27 +22,20 @@ public class Main extends Application {
         primaryStage.show();
 
         Matrix2D A = new Matrix2D(2,3);
-        A.printMatrix();
-        for(int r=0; r<A.getRows(); ++r) {
-            for(int c=0; c<A.getCols(); ++c) {
-                A.setElement(r*A.getCols()+c,r,c);
+        for(int r=0; r<2; ++r) {
+            for(int c=0; c<3; ++c) {
+                A.setElement(r+c,r,c);
             }
         }
         A.printMatrix();
-
-        Matrix2D B = new Matrix2D(2,3);
-        for(int r=0; r<B.getRows(); ++r) {
-            for(int c=0; c<B.getRows(); ++c) {
-                B.setElement(2*(r*A.getCols()+c),r,c);
-            }
-        }
-        B.printMatrix();
+        A.transpose().printMatrix();
 
         try {
-            Matrix2D sum = Matrix2D.addMatrices(A, B);
-            sum.printMatrix();
+            System.out.println(Matrix2D.dot(A.getRow(0).transpose(), A.getRow(1).transpose()));
+            Matrix2D.multiplyMatrices(A,A.transpose()).printMatrix();
         } catch(IncompatibleMatricesException e) {
             e.printStackTrace();
         }
+        Matrix2D.multiplyScalar(A,2).printMatrix();
     }
 }
