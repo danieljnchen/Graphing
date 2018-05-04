@@ -1,13 +1,19 @@
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class Main extends Application {
     private static final double width = 700;
     private static final double height = 500;
+    private static Function currentFunction;
 
     public static void main(String[] args) {
         launch(args);
@@ -21,21 +27,28 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
 
-        Matrix2D A = new Matrix2D(2,3);
-        for(int r=0; r<2; ++r) {
-            for(int c=0; c<3; ++c) {
-                A.setElement(r+c,r,c);
+        HBox functionInput = new HBox();
+        functionInput.setLayoutX(10);
+        functionInput.setLayoutY(10);
+        functionInput.setSpacing(10);
+        Label label = new Label("y = ");
+        TextField function = new TextField();
+        Button graphFunction = new Button("Graph Function");
+        graphFunction.setOnAction(actionEvent -> {
+            Function currentFunction = new Function(function.getText());
+            try {
+                System.out.println(currentFunction.evaluate(3));
+            } catch(InvalidOperationException e) {
+                e.printStackTrace();
             }
-        }
-        A.printMatrix();
-        A.transpose().printMatrix();
+        });
+        functionInput.getChildren().addAll(label,function,graphFunction);
+        root.getChildren().add(functionInput);
 
-        try {
-            System.out.println(Matrix2D.dot(A.getRow(0).transpose(), A.getRow(1).transpose()));
-            Matrix2D.multiplyMatrices(A,A.transpose()).printMatrix();
-        } catch(IncompatibleMatricesException e) {
-            e.printStackTrace();
-        }
-        Matrix2D.multiplyScalar(A,2).printMatrix();
+        new AnimationTimer() {
+            public void handle(long currentNanoTime) {
+
+            }
+        }.start();
     }
 }
