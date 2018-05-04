@@ -35,10 +35,10 @@ public class Main extends Application {
         TextField function = new TextField();
         Button graphFunction = new Button("Graph Function");
         graphFunction.setOnAction(actionEvent -> {
-            Function currentFunction = new Function(function.getText());
             try {
+                currentFunction = new Function(function.getText());
                 System.out.println(currentFunction.evaluate(3));
-            } catch(InvalidOperationException e) {
+            } catch(InvalidOperationException | InvalidStringException e) {
                 e.printStackTrace();
             }
         });

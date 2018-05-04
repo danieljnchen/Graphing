@@ -1,20 +1,27 @@
 public class Function {
     // operations supported: +, -, *, /, ^, log/ln, sin, cos, tan, csc, sec, cot, asin, acos, atan
     Function function1, function2;
-    String function;
     String operation; // arithmatic operation
 
     public Function() {
 
     }
-    public Function(String function) {
-        setFunction(function);
-        Function[] functions = parseFunction();
-        function1 = functions[0];
-        function2 = functions[1];
-    }
-    public void setFunction(String function) {
-        this.function = function;
+    public Function(String function) throws InvalidStringException {
+        function = removeSpaces(function);
+        if(!isNumber(function.charAt(0)) || !isNumber(function.charAt(function.length()-1))) {
+            throw new InvalidStringException();
+        }
+        for(int i=0; i<function.length(); ++i) {
+            if(!isNumber(function.charAt(i))) {
+                function1 = new Function(function.substring(0,i));
+                operation = function.substring(i,i+1);
+                function2 = new Function(function.substring(i+1,function.length()));
+                return;
+            }
+        }
+        function1 = new FunctionDouble(Double.valueOf(function));
+        operation = "+";
+        function2 = FunctionDouble.ZERO;
     }
 
     public double evaluate(double var) throws InvalidOperationException {
@@ -25,21 +32,6 @@ public class Function {
         } else {
             throw new InvalidOperationException();
         }
-    }
-
-    public Function[] parseFunction() {
-        Function[] out = new Function[2];
-        function = removeSpaces(function);
-        if(function.contains("+")) {
-            out[0] = new Function(function.substring(0, function.indexOf("+")));
-            out[1] = new Function(function.substring(function.indexOf("+") + 1, function.length()));
-        } else {
-        }
-        try {
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        return out;
     }
 
     public static String removeSpaces(String function) {
