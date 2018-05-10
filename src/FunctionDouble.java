@@ -12,4 +12,8 @@ public class FunctionDouble extends Function {
         return value;
     }
 
+    @Override
+    public String getText() {
+        return String.valueOf(value);
+    }
 }
