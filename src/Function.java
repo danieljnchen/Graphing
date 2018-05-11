@@ -25,7 +25,7 @@ public class Function {
                     }
                 }
                 return;
-            } else if(isParenthese(functionString.charAt(i))) {
+            } else if(functionString.charAt(i) == '(') {
                 System.out.println("asjdflk;");
                 int match = parentheseMatch(functionString,i);
                 function1 = new Function(functionString.substring(i+1,match));
@@ -45,7 +45,7 @@ public class Function {
         function2 = FunctionDouble.ZERO;
     }
 
-    public double evaluate(double var) throws InvalidOperationException {
+    public double evaluate(double[] var) throws InvalidOperationException {
         if(operation.equals("+") || operation.equals("-")) {
             return (operation.equals("+")?1:-1)*(function1.evaluate(var)+function2.evaluate(var));
         } else if(operation.equals("*") || operation.equals("/")) {
@@ -99,21 +99,34 @@ public class Function {
     public static boolean isNumber(char c) {
         return (c>47 && c<58) || c=='.';
     }
-    public static boolean isValid(char c) {
-        return isNumber(c) || isVariable(c) || isParenthese(c) || isOperation(c);
-    }
-    public static boolean isVariable(char c) {
-        return c == 'x';
-    }
-    public static boolean isParenthese(char c) {
-        return c == '(' || c == ')';
-    }
-    public static boolean isOperation(char c) {
-        return c == '+' || c == '-' || c == '*' || c == '/';
+    public static boolean isValid(char in, char[] validChars) {
+        for(char c : validChars) {
+            if(in == c) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String getText() {
         return "(" + function1.getText() + operation + function2.getText() + ")";
+    }
+
+    public double[] parseParams(String params) throws InvalidStringException {
+        params = removeSpaces(params);
+        if((params.length()<2) || (params.charAt(0) != '(') || (params.charAt(params.length()-1) != ')') || params.contains("(,") || params.contains(",)") || params.contains(",,")) {
+            throw new InvalidStringException();
+        }
+        if(params.length() == 2) {
+            double[] out = {};
+            return out;
+        }
+        int length = 1;
+        for(int i=0; i<params.length(); ++i) {
+            if(params.charAt(i) == ',') {
+                ++length;
+            }
+        }
     }
 
     /*public static double getInitialNumber(String s) throws InvalidStringException {
