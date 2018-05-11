@@ -26,7 +26,18 @@ public class Function {
                 }
                 return;
             } else if(isParenthese(functionString.charAt(i))) {
-
+                System.out.println("asjdflk;");
+                int match = parentheseMatch(functionString,i);
+                function1 = new Function(functionString.substring(i+1,match));
+                if(match == functionString.length()-1) {
+                    operation = "+";
+                    function2 = FunctionDouble.ZERO;
+                } else {
+                    operation = functionString.substring(match+1,match+2);
+                    function2 = FunctionDouble.ZERO;
+                    function2 = new Function(functionString.substring(match+2));
+                }
+                return;
             }
         }
         function1 = new FunctionDouble(Double.valueOf(functionString));
@@ -60,21 +71,36 @@ public class Function {
         }
 
         int depth = 0;
+        int pDepth = 0;
         for(int i=0; i<s.length(); ++i) {
-            if(i<=index && s.charAt(i)=='(') {
+            if(i<index) {
+                if(s.charAt(i) == '(') {
+                    ++depth;
+                } else if(s.charAt(i) == ')') {
+                    --depth;
+                }
+            } else if(i == index) {
                 ++depth;
-            } else {
-
+                pDepth = depth;
+            } else if(s.charAt(i) == '(' || s.charAt(i) == ')') {
+                if(s.charAt(i) == '(') {
+                    ++depth;
+                } else if(s.charAt(i) == ')') {
+                    --depth;
+                }
+                if(depth == pDepth-1) {
+                    return i;
+                }
             }
         }
-        return 0;
+        return -1;
     }
 
     public static boolean isNumber(char c) {
         return (c>47 && c<58) || c=='.';
     }
     public static boolean isValid(char c) {
-        return isNumber(c) || isVariable(c) || isParenthese(c);
+        return isNumber(c) || isVariable(c) || isParenthese(c) || isOperation(c);
     }
     public static boolean isVariable(char c) {
         return c == 'x';
