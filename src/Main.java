@@ -53,8 +53,8 @@ public class Main extends Application {
         Button evaluateFunction = new Button("Evaluate Function");
         evaluateFunction.setOnAction(actionEvent -> {
             try {
-                System.out.println(currentFunction.evaluate(Double.valueOf(var.getText())));
-            } catch(InvalidOperationException e) {
+                System.out.println(currentFunction.evaluate(currentFunction.parseParams(var.getText())));
+            } catch(InvalidOperationException | InvalidStringException e) {
                 e.printStackTrace();
             }
         });

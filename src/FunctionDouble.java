@@ -7,7 +7,7 @@ public class FunctionDouble extends StackElement {
         this.value = value;
     }
 
-    public double evaluate(double var) {
+    public double evaluate(double[] var) {
         return value;
     }
 

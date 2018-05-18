@@ -4,12 +4,16 @@ public class Function {
     // operations supported: +, -, *, /, ^, log/ln, sin, cos, tan, csc, sec, cot, asin, acos, atan
     //Function function1, function2;
     //String operation; // arithmatic operation
+    public static final char[] operations = {'+', '-', '*', '/', '^'};
+    private static char[] vars = {'x'};
     String function;
 
     public Function() {
 
     }
     public Function(String function) throws InvalidStringException {
+        function = removeSpaces(function);
+        //convert to postfix
         /*String functionString = removeSpaces(function);
 
         for(int i=0; i<functionString.length(); ++i) {
@@ -48,7 +52,7 @@ public class Function {
         function2 = FunctionDouble.ZERO;*/
     }
 
-    public double evaluate(double[] var) throws InvalidOperationException {
+    public double evaluate(double[] vars) throws InvalidOperationException {
         /*if(operation.equals("+") || operation.equals("-")) {
             return (operation.equals("+")?1:-1)*(function1.evaluate(var)+function2.evaluate(var));
         } else if(operation.equals("*") || operation.equals("/")) {
@@ -60,10 +64,29 @@ public class Function {
         }*/
         Stack stack = new Stack();
         for(int i=0; i<function.length(); ++i) {
-            if(function.charAt(i) == ',') {
+            char curr = function.charAt(i);
+            if(curr == ',') {
+                stack.addElement(function.substring(0,i));
+                function = function.substring(i+1,function.length());
+            } else if(charContains(curr,operations)) {
+                Operation operation = new Operation(curr);
+                try {
+                    stack.addElement(new FunctionDouble(operation.evaluate(new double[] {stack.pop().evaluate(vars), stack.pop().evaluate(vars)})));
+                } catch(WrongParamNumberException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return 0;
+    }
+
+    public static int getVarNumber(char c) {
+        for(int i=0; i<vars.length; ++i) {
+            if(vars[i] == c) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public static String removeSpaces(String function) {
@@ -110,7 +133,7 @@ public class Function {
     public static boolean isNumber(char c) {
         return (c>47 && c<58) || c=='.';
     }
-    public static boolean isValid(char in, char[] validChars) {
+    public static boolean charContains(char in, char[] validChars) {
         for(char c : validChars) {
             if(in == c) {
                 return true;

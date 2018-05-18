@@ -1,7 +1,9 @@
-public class FunctionVar extends Function {
-    public FunctionVar(double var) {
+public class FunctionVar extends StackElement {
+    private int varNumber;
+    public FunctionVar(int varNumber) {
+        this.varNumber = varNumber;
     }
-    public double evaluate(double var) {
-        return var;
+    public double evaluate(double[] var) {
+        return var[varNumber];
     }
 }
