@@ -1,13 +1,16 @@
+import java.util.ArrayList;
+
 public class Function {
     // operations supported: +, -, *, /, ^, log/ln, sin, cos, tan, csc, sec, cot, asin, acos, atan
-    Function function1, function2;
-    String operation; // arithmatic operation
+    //Function function1, function2;
+    //String operation; // arithmatic operation
+    String function;
 
     public Function() {
 
     }
     public Function(String function) throws InvalidStringException {
-        String functionString = removeSpaces(function);
+        /*String functionString = removeSpaces(function);
 
         for(int i=0; i<functionString.length(); ++i) {
             if(!isValid(functionString.charAt(i))) {
@@ -42,11 +45,11 @@ public class Function {
         }
         function1 = new FunctionDouble(Double.valueOf(functionString));
         operation = "+";
-        function2 = FunctionDouble.ZERO;
+        function2 = FunctionDouble.ZERO;*/
     }
 
     public double evaluate(double[] var) throws InvalidOperationException {
-        if(operation.equals("+") || operation.equals("-")) {
+        /*if(operation.equals("+") || operation.equals("-")) {
             return (operation.equals("+")?1:-1)*(function1.evaluate(var)+function2.evaluate(var));
         } else if(operation.equals("*") || operation.equals("/")) {
             return function1.evaluate(var) * Math.pow(function2.evaluate(var), (operation.equals("*") ? 1 : -1));
@@ -54,12 +57,20 @@ public class Function {
             return Math.pow(function1.evaluate(var), function2.evaluate(var));
         } else {
             throw new InvalidOperationException();
+        }*/
+        Stack stack = new Stack();
+        for(int i=0; i<function.length(); ++i) {
+            if(function.charAt(i) == ',') {
+            }
         }
+        return 0;
     }
 
     public static String removeSpaces(String function) {
-        while(function.contains(" ")) {
-            function = function.substring(0,function.indexOf(" ")) + function.substring(function.indexOf(" ") + 1, function.length());
+        for(int i=0; i<function.length(); ++i) {
+            if(function.charAt(i) == ' ') {
+                function = function.substring(0,i) + function.substring(i+1, function.length());
+            }
         }
         System.out.println(function);
         return function;
@@ -109,7 +120,7 @@ public class Function {
     }
 
     public String getText() {
-        return "(" + function1.getText() + operation + function2.getText() + ")";
+        return function;
     }
 
     public double[] parseParams(String params) throws InvalidStringException {
@@ -121,12 +132,20 @@ public class Function {
             double[] out = {};
             return out;
         }
-        int length = 1;
-        for(int i=0; i<params.length(); ++i) {
-            if(params.charAt(i) == ',') {
-                ++length;
+        ArrayList<Double> outArr = new ArrayList<>();
+        params = params.substring(1);
+        for(int i=1; i<params.length(); ++i) {
+            if(params.charAt(i) == ')') {
+                break;
+            } else if(params.charAt(i) == ',') {
+                outArr.add(new Double(Double.parseDouble(params.substring(0,i))));
             }
         }
+        double[] out = new double[outArr.size()];
+        for(int i=0; i<outArr.size(); ++i) {
+            out[i] = outArr.get(i).doubleValue();
+        }
+        return out;
     }
 
     /*public static double getInitialNumber(String s) throws InvalidStringException {

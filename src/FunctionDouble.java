@@ -1,4 +1,4 @@
-public class FunctionDouble extends Function {
+public class FunctionDouble extends StackElement {
     public static final FunctionDouble ZERO = new FunctionDouble(0);
     double value;
 
@@ -7,12 +7,10 @@ public class FunctionDouble extends Function {
         this.value = value;
     }
 
-    @Override
     public double evaluate(double var) {
         return value;
     }
 
-    @Override
     public String getText() {
         return String.valueOf(value);
     }
