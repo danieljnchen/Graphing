@@ -48,27 +48,32 @@ public class Operation extends StackElement {
         return operation;
     }
 
-    public double evaluate(double[] vars) throws WrongParamNumberException {
-        if(vars.length != getParamNums()) {
+    public double evaluate(double[] vars) {
+        System.out.println("Operation was evaluated");
+        return 0;
+    }
+
+    public double evaluateFunction(double[] operands) throws WrongParamNumberException {
+        if(operands.length != getParamNum()) {
             throw new WrongParamNumberException();
         }
 
         switch(operation) {
             case ADD:
-                return vars[0] + vars[1];
+                return operands[0] + operands[1];
             case SUBTRACT:
-                return vars[0] - vars[1];
+                return operands[0] - operands[1];
             case MULTIPLY:
-                return vars[0] * vars[1];
+                return operands[0] * operands[1];
             case DIVIDE:
-                return vars[0] / vars[1];
+                return operands[0] / operands[1];
             case POWER:
-                return Math.pow(vars[0],vars[1]);
+                return Math.pow(operands[0],operands[1]);
         }
         return -1;
     }
 
-    public int getParamNums() {
+    public int getParamNum() {
         switch(operation) {
             case ADD:
                 return 2;

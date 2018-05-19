@@ -1,8 +1,8 @@
-public class FunctionDouble extends StackElement {
-    public static final FunctionDouble ZERO = new FunctionDouble(0);
+public class StackDouble extends StackElement {
+    public static final StackDouble ZERO = new StackDouble(0);
     double value;
 
-    public FunctionDouble(double value) {
+    public StackDouble(double value) {
         super();
         this.value = value;
     }

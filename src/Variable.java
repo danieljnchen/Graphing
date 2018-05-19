@@ -1,6 +1,6 @@
-public class FunctionVar extends StackElement {
+public class Variable extends StackElement {
     private int varNumber;
-    public FunctionVar(int varNumber) {
+    public Variable(int varNumber) {
         this.varNumber = varNumber;
     }
     public double evaluate(double[] var) {

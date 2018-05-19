@@ -1,3 +1,3 @@
 public abstract class StackElement {
-    public abstract double evaluate(double[] vars) throws WrongParamNumberException;
+    public abstract double evaluate(double[] vars);
 }
