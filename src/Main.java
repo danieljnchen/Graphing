@@ -16,7 +16,7 @@ public class Main extends Application {
     private static final double width = 700;
     private static final double height = 500;
     public static Function currentFunction;
-    public static char[] vars = {'x'};
+    public static char[] vars = {'x', 'y', 'z'};
 
     public static void main(String[] args) {
         launch(args);

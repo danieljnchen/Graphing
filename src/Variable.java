@@ -1,3 +1,4 @@
+//verified
 public class Variable extends StackElement {
     private int varNumber;
     public Variable(int varNumber) {
