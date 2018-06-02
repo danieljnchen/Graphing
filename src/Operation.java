@@ -88,4 +88,20 @@ public class Operation extends StackElement {
         }
         return -1;
     }
+
+    public String getText() {
+        switch(operation) {
+            case ADD:
+                return "+";
+            case SUBTRACT:
+                return "-";
+            case MULTIPLY:
+                return "*";
+            case DIVIDE:
+                return "/";
+            case POWER:
+                return "^";
+        }
+        return "";
+    }
 }

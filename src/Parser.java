@@ -1,6 +1,12 @@
 import java.util.ArrayList;
 
 public class Parser {
+    public static ArrayList<StackElement> parseFunction(String function) {
+        function = removeSpaces(function);
+        ArrayList<String> elements = new ArrayList<>();
+        Operation.Types type;
+        return null;
+    }
     public static boolean isLetter(char c) {
         return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
     }

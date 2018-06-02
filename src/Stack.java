@@ -6,51 +6,38 @@ public class Stack {
     public Stack() {
     }
 
-    public void addElement(String s) {
-        if(s.length() == 1) {
-            char c = s.charAt(0);
-            if(Parser.charContains(c, Function.operations)) {
-                stack.add(new Operation(c));
-                return;
-            } else if(Parser.isLetter(c)) {
-                stack.add(new Variable(Function.getVarNumber(c)));
-            }
+    public void push(String s) {
+        StackElement newElement = parseElement(s);
+        if(newElement != null) {
+            stack.add(newElement);
         }
-        //@TODO parse double
     }
 
-    public void addElement(StackElement element) {
+    public void push(StackElement element) {
         stack.add(element);
     }
 
-    public void parseElement(String s) {
-        //@TODO parse element
+    public StackElement parseElement(String s) {
+        if(s.length() == 1) {
+            char c = s.charAt(0);
+            if(Parser.charContains(c, Function.operations)) {
+                return new Operation(c);
+            } else if(Parser.isLetter(c)) {
+                return new Variable(Function.getVarNumber(c));
+            }
+        } else {
+            try {
+                double d = Double.parseDouble(s);
+                return new StackDouble(d);
+            } catch (NumberFormatException e) {
+                System.out.println("String " + s + " could not be added to the stack");
+            }
+        }
+        return null;
     }
 
     public StackElement pop() {
         return stack.remove(stack.size()-1);
-    }
-
-    public double evaluate(double[] vars) {
-        ArrayList<StackDouble> evaluateStack = new ArrayList<>();
-        for(int i=0; i<stack.size(); ++i) {
-            StackElement curr = stack.get(i);
-            if(stack.get(i) instanceof Operation) {
-                Operation operation = (Operation) curr;
-                double[] operands = new double[operation.getParamNum()];
-                for(int j=0; j<operation.getParamNum(); ++j) {
-                    operands[j] = evaluateStack.remove(evaluateStack.size()-1).evaluate(vars);
-                }
-                try {
-                    evaluateStack.add(new StackDouble(operation.evaluateFunction(operands)));
-                } catch(WrongParamNumberException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                evaluateStack.add(new StackDouble(curr.evaluate(vars)));
-            }
-        }
-        return evaluateStack.get(evaluateStack.size()-1).evaluate(vars);
     }
 
     public String toString() {

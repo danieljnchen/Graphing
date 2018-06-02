@@ -1,29 +1,41 @@
+import java.util.ArrayList;
+
 public class Function {
     // operations supported: +, -, *, /, ^, log/ln, sin, cos, tan, csc, sec, cot, asin, acos, atan
     //Function function1, function2;
     //String operation; // arithmatic operation
     public static final char[] operations = {'+', '-', '*', '/', '^'};
-    private static char[] vars = {'x'};
-    Stack stack;
+    ArrayList<StackElement> function;
 
-    public Function() {
-
-    }
     public Function(String function) throws InvalidStringException {
-        function = Parser.removeSpaces(function);
+        this.function = Parser.parseFunction(function);
+    }
 
-        stack = new Stack();
-        for(int i=0; i<function.length(); ++i) {
+    public double evaluate(double[] vars) {
+        Stack evaluateStack = new Stack();
+        for (int i = 0; i < function.size(); ++i) {
+            StackElement curr = function.get(i);
+            if (curr instanceof Operation) {
+                Operation operation = (Operation) curr;
+                double[] operands = new double[operation.getParamNum()];
+                for (int j = 0; j < operation.getParamNum(); ++j) {
+                    operands[j] = evaluateStack.pop().evaluate(vars);
+                }
+                try {
+                    evaluateStack.push(new StackDouble(operation.evaluateFunction(operands)));
+                } catch (WrongParamNumberException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                evaluateStack.push(new StackDouble(curr.evaluate(vars)));
+            }
         }
+        return evaluateStack.pop().evaluate(vars);
     }
 
-    public double evaluate(double[] vars) throws InvalidOperationException {
-        return stack.evaluate(vars);
-    }
-
-    public static int getVarNumber(char c) {
-        for(int i=0; i<vars.length; ++i) {
-            if(vars[i] == c) {
+        public static int getVarNumber(char c) {
+        for(int i=0; i<Main.vars.length; ++i) {
+            if(Main.vars[i] == c) {
                 return i;
             }
         }
@@ -32,6 +44,10 @@ public class Function {
 
 
     public String getText() {
-        return stack.toString();
+        String out = "";
+        for(StackElement s : function) {
+            out = out + s.getText() + ",";
+        }
+        return out.substring(0,out.length()-1);
     }
 }

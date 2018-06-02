@@ -15,7 +15,8 @@ import javafx.stage.Stage;
 public class Main extends Application {
     private static final double width = 700;
     private static final double height = 500;
-    private static Function currentFunction;
+    public static Function currentFunction;
+    public static char[] vars = {'x'};
 
     public static void main(String[] args) {
         launch(args);
@@ -54,7 +55,7 @@ public class Main extends Application {
         evaluateFunction.setOnAction(actionEvent -> {
             try {
                 System.out.println(currentFunction.evaluate(Parser.parseParams(var.getText())));
-            } catch(InvalidOperationException | InvalidStringException e) {
+            } catch(InvalidStringException e) {
                 e.printStackTrace();
             }
         });
