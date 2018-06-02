@@ -33,14 +33,6 @@ public class Function {
         return evaluateStack.pop().evaluate(vars);
     }
 
-        public static int getVarNumber(char c) {
-        for(int i=0; i<Main.vars.length; ++i) {
-            if(Main.vars[i] == c) {
-                return i;
-            }
-        }
-        return -1;
-    }
 
 
     public String getText() {

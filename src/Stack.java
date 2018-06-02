@@ -6,38 +6,24 @@ public class Stack {
     public Stack() {
     }
 
-    public void push(String s) {
-        StackElement newElement = parseElement(s);
-        if(newElement != null) {
-            stack.add(newElement);
-        }
-    }
-
     public void push(StackElement element) {
         stack.add(element);
     }
 
-    public StackElement parseElement(String s) {
-        if(s.length() == 1) {
-            char c = s.charAt(0);
-            if(Parser.charContains(c, Function.operations)) {
-                return new Operation(c);
-            } else if(Parser.isLetter(c)) {
-                return new Variable(Function.getVarNumber(c));
-            }
+    public StackElement pop() {
+        if(stack.size() > 0) {
+            return stack.remove(stack.size() - 1);
         } else {
-            try {
-                double d = Double.parseDouble(s);
-                return new StackDouble(d);
-            } catch (NumberFormatException e) {
-                System.out.println("String " + s + " could not be added to the stack");
-            }
+            return null;
         }
-        return null;
     }
 
-    public StackElement pop() {
-        return stack.remove(stack.size()-1);
+    public StackElement peek() {
+        if(stack.size() > 0) {
+            return stack.get(stack.size() - 1);
+        } else {
+            return null;
+        }
     }
 
     public String toString() {

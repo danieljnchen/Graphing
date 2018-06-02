@@ -1,5 +1,6 @@
 public class Operation extends StackElement {
     private Operations operation;
+    private int priority;
 
     enum Operations {
         ADD,
@@ -28,24 +29,33 @@ public class Operation extends StackElement {
         switch(operation) {
             case '+':
                 this.operation = Operations.ADD;
+                priority = 0;
                 break;
             case '-':
                 this.operation = Operations.SUBTRACT;
+                priority = 0;
                 break;
             case '*':
                 this.operation = Operations.MULTIPLY;
+                priority = 1;
                 break;
             case '/':
                 this.operation = Operations.DIVIDE;
+                priority = 1;
                 break;
             case '^':
                 this.operation = Operations.POWER;
+                priority = 2;
                 break;
         }
     }
 
     public Operations getOperation() {
         return operation;
+    }
+
+    public int getPriority() {
+        return priority;
     }
 
     public double evaluate(double[] vars) {

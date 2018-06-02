@@ -2,13 +2,71 @@ import java.util.ArrayList;
 
 public class Parser {
     public static ArrayList<StackElement> parseFunction(String function) {
+        ArrayList<StackElement> out = new ArrayList<>();
         function = removeSpaces(function);
-        ArrayList<String> elements = new ArrayList<>();
-        Operation.Types type;
-        return null;
+        ArrayList<Integer> indices = new ArrayList<>();
+        Operation.Types type = determineType(function.charAt(0));
+        char c = function.charAt(0);
+        Operation.Types lastType = type;
+
+        indices.add(new Integer(0));
+        for(int i=0; i < function.length(); ++i) {
+            type = determineType(function.charAt(i));
+            if(type != lastType) {
+                indices.add(new Integer(i));
+                lastType = type;
+            }
+        }
+        indices.add(new Integer(function.length()));
+
+        for(int i=1; i<indices.size(); ++i) {
+            out.add(parseStackElement(function.substring(indices.get(i-1).intValue(),indices.get(i).intValue())));
+        }
+
+        return infixToPostfix(out);
     }
-    public static boolean isLetter(char c) {
-        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+
+    public static ArrayList<StackElement> infixToPostfix(ArrayList<StackElement> infix) {
+       ArrayList<StackElement> out = new ArrayList<>();
+       Stack operationStack = new Stack();
+
+       for(int i=0; i<infix.size(); ++i) {
+           StackElement curr = infix.get(i);
+           if(curr instanceof Operation) {
+               Operation operation = (Operation) curr;
+               if((operationStack.peek() == null) || (operation.getPriority() >= ((Operation) operationStack.peek()).getPriority())) {
+                   out.add(curr);
+               } else {
+                   operationStack.push(curr);
+               }
+           } else {
+               out.add(curr);
+           }
+       }
+       while(true) {
+           StackElement curr = operationStack.pop();
+           if(curr == null) {
+               break;
+           } else {
+               out.add(curr);
+           }
+       }
+
+       return out;
+    }
+
+    public static Operation.Types determineType(char c) {
+        if(isLetter(c)) {
+            return StackElement.Types.VARIABLE;
+        } else if(isNumber(c)) {
+            return StackElement.Types.DOUBLE;
+        } else if(isParenthesis(c)) {
+            return StackElement.Types.PARENTHESIS;
+        } else if(isOperation(c)) {
+            return StackElement.Types.OPERATION;
+        } else {
+            return null;
+        }
     }
 
     public static String removeSpaces(String function) {
@@ -21,6 +79,27 @@ public class Parser {
         }
         System.out.println(function);
         return function;
+    }
+
+    public static StackElement parseStackElement(String element) {
+        StackElement.Types type = determineType(element.charAt(0));
+        if(type == StackElement.Types.DOUBLE) {
+            return new StackDouble(Double.valueOf(element));
+        } else if(type == StackElement.Types.VARIABLE) {
+            return new Variable(Main.getVarNumber(element.charAt(0)));
+        } else if(type == StackElement.Types.PARENTHESIS) {
+            try {
+                return new Parenthesis(element.charAt(0));
+            } catch(InvalidStringException e) {
+                e.printStackTrace();
+            } finally {
+                return null;
+            }
+        } else if(type == StackElement.Types.OPERATION) {
+            return new Operation(element.charAt(0));
+        } else {
+            return null;
+        }
     }
 
     public static double[] parseParams(String params) throws InvalidStringException {
@@ -81,6 +160,15 @@ public class Parser {
 
     public static boolean isNumber(char c) {
         return (c>47 && c<58) || c=='.';
+    }
+    public static boolean isLetter(char c) {
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+    }
+    public static boolean isParenthesis(char c) {
+        return c == '(' || c == ')';
+    }
+    public static boolean isOperation(char c) {
+        return c == '+' || c == '-' || c == '*' || c == '/' || c == '^';
     }
 
     public static boolean charContains(char in, char[] validChars) {

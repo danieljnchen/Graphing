@@ -71,4 +71,13 @@ public class Main extends Application {
             }
         }.start();
     }
+
+    public static int getVarNumber(char c) {
+        for(int i=0; i<vars.length; ++i) {
+            if(vars[i] == c) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }
