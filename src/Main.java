@@ -34,32 +34,38 @@ public class Main extends Application {
 
         HBox functionInput = new HBox();
         functionInput.setSpacing(10);
-        Label label = new Label("y = ");
+        String labelText = "f(";
+        for(char c : vars) {
+            labelText = labelText + String.valueOf(c) + ",";
+        }
+        labelText = labelText.substring(0,labelText.length()-1) + ")";
+        Label label = new Label(labelText);
         TextField function = new TextField();
         Button graphFunction = new Button("Load Function");
         graphFunction.setOnAction(actionEvent -> {
-            try {
-                currentFunction = new Function(function.getText());
-                functionText.setText(currentFunction.getText());
-            } catch(InvalidStringException e) {
-                e.printStackTrace();
-            }
+            currentFunction = new Function(function.getText());
+            functionText.setText(currentFunction.toString());
         });
         functionInput.getChildren().addAll(label,function,graphFunction);
 
         HBox functionEvaluate = new HBox();
         functionEvaluate.setSpacing(10);
-        Label label2 = new Label("x = ");
-        TextField var = new TextField();
+        String label2Text = "(";
+        for(char c : vars) {
+            label2Text = label2Text + String.valueOf(c) + ",";
+        }
+        label2Text = label2Text.substring(0,label2Text.length()-1) + ") = ";
+        Label label2 = new Label(label2Text);
+        TextField vars = new TextField();
         Button evaluateFunction = new Button("Evaluate Function");
         evaluateFunction.setOnAction(actionEvent -> {
             try {
-                System.out.println(currentFunction.evaluate(Parser.parseParams(var.getText())));
+                System.out.println(currentFunction.evaluate(Parser.parseParams(vars.getText())));
             } catch(InvalidStringException e) {
                 e.printStackTrace();
             }
         });
-        functionEvaluate.getChildren().addAll(label2,var,evaluateFunction);
+        functionEvaluate.getChildren().addAll(label2,vars,evaluateFunction);
 
         VBox all = new VBox();
         all.setSpacing(10);
@@ -78,6 +84,7 @@ public class Main extends Application {
                 return i;
             }
         }
+        System.out.println("Invalid variable character");
         return -1;
     }
 }

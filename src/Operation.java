@@ -1,3 +1,4 @@
+//verified
 public class Operation extends StackElement {
     private Operations operation;
     private int priority;
@@ -99,7 +100,7 @@ public class Operation extends StackElement {
         return -1;
     }
 
-    public String getText() {
+    public String toString() {
         switch(operation) {
             case ADD:
                 return "+";

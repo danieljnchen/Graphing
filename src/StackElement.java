@@ -6,5 +6,5 @@ public abstract class StackElement {
         DOUBLE
     }
     public abstract double evaluate(double[] vars);
-    public abstract String getText();
+    public abstract String toString();
 }

@@ -1,13 +1,9 @@
 import java.util.ArrayList;
 
 public class Function {
-    // operations supported: +, -, *, /, ^, log/ln, sin, cos, tan, csc, sec, cot, asin, acos, atan
-    //Function function1, function2;
-    //String operation; // arithmatic operation
-    public static final char[] operations = {'+', '-', '*', '/', '^'};
     ArrayList<StackElement> function;
 
-    public Function(String function) throws InvalidStringException {
+    public Function(String function) {
         this.function = Parser.parseFunction(function);
     }
 
@@ -18,7 +14,7 @@ public class Function {
             if (curr instanceof Operation) {
                 Operation operation = (Operation) curr;
                 double[] operands = new double[operation.getParamNum()];
-                for (int j = 0; j < operation.getParamNum(); ++j) {
+                for (int j = operation.getParamNum() - 1; j >= 0; --j) {
                     operands[j] = evaluateStack.pop().evaluate(vars);
                 }
                 try {
@@ -30,15 +26,15 @@ public class Function {
                 evaluateStack.push(new StackDouble(curr.evaluate(vars)));
             }
         }
-        return evaluateStack.pop().evaluate(vars);
+        return evaluateStack.peek().evaluate(vars);
     }
 
 
 
-    public String getText() {
+    public String toString() {
         String out = "";
         for(StackElement s : function) {
-            out = out + s.getText() + ",";
+            out = out + s.toString() + ",";
         }
         return out.substring(0,out.length()-1);
     }

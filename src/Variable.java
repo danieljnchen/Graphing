@@ -7,7 +7,7 @@ public class Variable extends StackElement {
     public double evaluate(double[] var) {
         return var[varNumber];
     }
-    public String getText() {
+    public String toString() {
         return String.valueOf(Main.vars[varNumber]);
     }
 }

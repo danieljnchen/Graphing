@@ -6,7 +6,6 @@ public class Parser {
         function = removeSpaces(function);
         ArrayList<Integer> indices = new ArrayList<>();
         Operation.Types type = determineType(function.charAt(0));
-        char c = function.charAt(0);
         Operation.Types lastType = type;
 
         indices.add(new Integer(0));
@@ -34,8 +33,30 @@ public class Parser {
            StackElement curr = infix.get(i);
            if(curr instanceof Operation) {
                Operation operation = (Operation) curr;
-               if((operationStack.peek() == null) || (operation.getPriority() >= ((Operation) operationStack.peek()).getPriority())) {
-                   out.add(curr);
+               StackElement next = operationStack.peek();
+               if((next == null) || (next instanceof Parenthesis)) {
+               } else if(operation.getPriority() <= ((Operation) next).getPriority()) {
+                   while(true) {
+                       StackElement top = operationStack.peek();
+                       if((top instanceof Operation) && (operation.getPriority() <= ((Operation) top).getPriority())) {
+                           out.add(operationStack.pop());
+                       } else {
+                           break;
+                       }
+                   }
+               }
+               operationStack.push(operation);
+           } else if(curr instanceof Parenthesis) {
+               if(((Parenthesis) curr).getSide() == Parenthesis.Side.RIGHT) {
+                   while (true) {
+                       StackElement next = operationStack.peek();
+                       if ((next == null) || ((next instanceof Parenthesis) && (((Parenthesis) next).getSide() == Parenthesis.Side.LEFT))) {
+                           operationStack.pop();
+                           break;
+                       } else {
+                           out.add(operationStack.pop());
+                       }
+                   }
                } else {
                    operationStack.push(curr);
                }
@@ -77,7 +98,6 @@ public class Parser {
                 ++i;
             }
         }
-        System.out.println(function);
         return function;
     }
 
@@ -92,14 +112,11 @@ public class Parser {
                 return new Parenthesis(element.charAt(0));
             } catch(InvalidStringException e) {
                 e.printStackTrace();
-            } finally {
-                return null;
             }
         } else if(type == StackElement.Types.OPERATION) {
             return new Operation(element.charAt(0));
-        } else {
-            return null;
         }
+        return null;
     }
 
     public static double[] parseParams(String params) throws InvalidStringException {
@@ -127,7 +144,7 @@ public class Parser {
         return out;
     }
 
-    public static int parentheseMatch(String s, int index) {
+    /*public static int parentheseMatch(String s, int index) {
         if(s.charAt(index) != '(') {
             return -1;
         }
@@ -156,7 +173,7 @@ public class Parser {
             }
         }
         return -1;
-    }
+    }*/
 
     public static boolean isNumber(char c) {
         return (c>47 && c<58) || c=='.';
@@ -171,12 +188,12 @@ public class Parser {
         return c == '+' || c == '-' || c == '*' || c == '/' || c == '^';
     }
 
-    public static boolean charContains(char in, char[] validChars) {
+    /*public static boolean charContains(char in, char[] validChars) {
         for(char c : validChars) {
             if(in == c) {
                 return true;
             }
         }
         return false;
-    }
+    }*/
 }

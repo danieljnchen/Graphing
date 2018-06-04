@@ -12,7 +12,7 @@ public class StackDouble extends StackElement {
         return value;
     }
 
-    public String getText() {
+    public String toString() {
         return String.valueOf(value);
     }
 }

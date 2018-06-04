@@ -1,5 +1,11 @@
+//verified
 public class Parenthesis extends StackElement {
-    public Side side;
+    private Side side;
+
+    public enum Side {
+        LEFT,
+        RIGHT
+    }
 
     public Parenthesis(char in) throws InvalidStringException {
         if(in == '(') {
@@ -13,15 +19,16 @@ public class Parenthesis extends StackElement {
 
     @Override
     public double evaluate(double[] vars) {
+        System.out.println("Parenthesis was evaluated");
         return 0;
     }
 
-    public enum Side {
-        LEFT,
-        RIGHT
+
+    public Side getSide() {
+        return side;
     }
 
-    public String getText() {
+    public String toString() {
         if(side == Side.LEFT) {
             return "(";
         } else {
