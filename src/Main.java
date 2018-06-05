@@ -16,7 +16,7 @@ public class Main extends Application {
     private static final double width = 700;
     private static final double height = 500;
     public static Function currentFunction;
-    public static char[] vars = {'x', 'y', 'z'};
+    public static char[] vars = {};
 
     public static void main(String[] args) {
         launch(args);
@@ -34,42 +34,48 @@ public class Main extends Application {
 
         HBox functionInput = new HBox();
         functionInput.setSpacing(10);
-        String labelText = "f(";
-        for(char c : vars) {
-            labelText = labelText + String.valueOf(c) + ",";
-        }
-        labelText = labelText.substring(0,labelText.length()-1) + ")";
-        Label label = new Label(labelText);
+        Text functionLabel = new Text("f()");
         TextField function = new TextField();
         Button graphFunction = new Button("Load Function");
         graphFunction.setOnAction(actionEvent -> {
             currentFunction = new Function(function.getText());
             functionText.setText(currentFunction.toString());
         });
-        functionInput.getChildren().addAll(label,function,graphFunction);
+        functionInput.getChildren().addAll(functionLabel,function,graphFunction);
 
         HBox functionEvaluate = new HBox();
         functionEvaluate.setSpacing(10);
-        String label2Text = "(";
-        for(char c : vars) {
-            label2Text = label2Text + String.valueOf(c) + ",";
-        }
-        label2Text = label2Text.substring(0,label2Text.length()-1) + ") = ";
-        Label label2 = new Label(label2Text);
-        TextField vars = new TextField();
+        Text variablesText = new Text("() = ");
+        Text paramFormat = new Text("Format: number,number,number,...,number");
+        TextField varsTextField = new TextField();
         Button evaluateFunction = new Button("Evaluate Function");
         evaluateFunction.setOnAction(actionEvent -> {
-            try {
-                System.out.println(currentFunction.evaluate(Parser.parseParams(vars.getText())));
-            } catch(InvalidStringException e) {
-                e.printStackTrace();
-            }
+            System.out.println(currentFunction.evaluate(Parser.parseParams(varsTextField.getText())));
         });
-        functionEvaluate.getChildren().addAll(label2,vars,evaluateFunction);
+        functionEvaluate.getChildren().addAll(variablesText,varsTextField,paramFormat,evaluateFunction);
+
+        HBox variableInput = new HBox();
+        variableInput.setSpacing(10);
+        Label varsLabel = new Label("Variables");
+        Text varsFormat = new Text("Format: char,char,...,char");
+        Text variables = new Text();
+        TextField varsInputField = new TextField();
+        Button inputVars = new Button("Load Variables");
+        inputVars.setOnAction(actionEvent -> {
+            vars = Parser.parseVariables(varsInputField.getText());
+            String varsText = "";
+            for(char c : vars) {
+                varsText = varsText + String.valueOf(c) + ",";
+            }
+            variables.setText(varsText.substring(0,varsText.length()-1));
+            variablesText.setText("(" + variables.getText() + ") = ");
+            functionLabel.setText("f(" + variables.getText() + ") = ");
+        });
+        variableInput.getChildren().addAll(varsLabel,varsInputField,inputVars,varsFormat);
 
         VBox all = new VBox();
         all.setSpacing(10);
-        all.getChildren().addAll(functionInput,functionText,functionEvaluate);
+        all.getChildren().addAll(functionInput,functionText,variableInput,functionEvaluate);
         root.getChildren().add(all);
 
         new AnimationTimer() {

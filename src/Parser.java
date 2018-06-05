@@ -119,27 +119,39 @@ public class Parser {
         return null;
     }
 
-    public static double[] parseParams(String params) throws InvalidStringException {
-        params = Parser.removeSpaces(params);
-        if ((params.length() < 2) || (params.charAt(0) != '(') || (params.charAt(params.length() - 1) != ')') || params.contains("(,") || params.contains(",)") || params.contains(",,")) {
-            throw new InvalidStringException();
-        }
-        if (params.length() == 2) {
-            double[] out = {};
-            return out;
-        }
-        ArrayList<Double> outArr = new ArrayList<>();
-        params = params.substring(1);
-        for (int i = 1; i < params.length(); ++i) {
-            if (params.charAt(i) == ')') {
-                break;
-            } else if (params.charAt(i) == ',') {
-                outArr.add(new Double(Double.parseDouble(params.substring(0, i))));
+    public static double[] parseParams(String params) {
+        params = Parser.removeSpaces(params) + ",";
+        ArrayList<String> outArr = new ArrayList<>();
+        int begin = 0;
+        for(int next=0; next<params.length(); ++next) {
+            if(params.charAt(next) == ',') {
+                outArr.add(params.substring(begin,next));
+                begin = next + 1;
+                ++next; //there should be no adjacent commas
             }
         }
         double[] out = new double[outArr.size()];
-        for (int i = 0; i < outArr.size(); ++i) {
-            out[i] = outArr.get(i).doubleValue();
+        for(int i=0; i<outArr.size(); ++i) {
+            try {
+                out[i] = Double.parseDouble(outArr.get(i));
+            } catch(NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        return out;
+    }
+
+    public static char[] parseVariables(String variables) {
+        variables = Parser.removeSpaces(variables) + ",";
+        ArrayList<Character> outArr = new ArrayList<>();
+        for(int i=0; i<variables.length(); ++i) {
+            if(variables.charAt(i) == ',') {
+                outArr.add(new Character(variables.charAt(i-1)));
+            }
+        }
+        char[] out = new char[outArr.size()];
+        for(int i=0; i<outArr.size(); ++i) {
+            out[i] = outArr.get(i).charValue();
         }
         return out;
     }
