@@ -1,6 +1,12 @@
 public class Matrix2D {
     private double[][] matrix;
 
+    public Matrix2D(double[] matrix) {
+        this.matrix = new double[matrix.length][1];
+        for(int i=0; i<matrix.length; ++i) {
+            this.matrix[i][0] = matrix[i];
+        }
+    }
     public Matrix2D(double[][] matrix) {
         this.matrix = matrix;
     }
@@ -107,6 +113,23 @@ public class Matrix2D {
         for(int r=0; r<a.getRows(); ++r) {
             for(int c=0; c<a.getCols(); ++c) {
                 out.setElement(a.getElement(r,c)*k,r,c);
+            }
+        }
+        return out;
+    }
+
+    @Override
+    public String toString() {
+        String out = "";
+        for(int r=0; r<getRows(); ++r) {
+            for(int c=0; c<getCols(); ++c) {
+                out += String.valueOf(matrix[r][c]);
+                if(c != getCols()-1) {
+                    out += ",";
+                }
+            }
+            if(r != getRows()-1) {
+                out += ";";
             }
         }
         return out;

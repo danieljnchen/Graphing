@@ -3,8 +3,8 @@ import java.util.ArrayList;
 public class Function {
     ArrayList<StackElement> function;
 
-    public Function(String function) {
-        this.function = Parser.parseFunction(function);
+    public Function(String function, int vectorID) {
+        this.function = Parser.parseFunction(function, vectorID);
     }
 
     public double evaluate(double[] vars) {

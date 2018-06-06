@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class Parser {
-    public static ArrayList<StackElement> parseFunction(String function) {
+    public static ArrayList<StackElement> parseFunction(String function, int vectorID) {
         ArrayList<StackElement> out = new ArrayList<>();
         function = removeSpaces(function);
         ArrayList<Integer> indices = new ArrayList<>();
@@ -19,7 +19,7 @@ public class Parser {
         indices.add(new Integer(function.length()));
 
         for(int i=1; i<indices.size(); ++i) {
-            out.add(parseStackElement(function.substring(indices.get(i-1).intValue(),indices.get(i).intValue())));
+            out.add(parseStackElement(function.substring(indices.get(i-1).intValue(),indices.get(i).intValue()),vectorID));
         }
 
         return infixToPostfix(out);
@@ -101,12 +101,17 @@ public class Parser {
         return function;
     }
 
-    public static StackElement parseStackElement(String element) {
+    public static StackElement parseStackElement(String element, int vectorID) {
         StackElement.Types type = determineType(element.charAt(0));
         if(type == StackElement.Types.DOUBLE) {
             return new StackDouble(Double.valueOf(element));
         } else if(type == StackElement.Types.VARIABLE) {
-            return new Variable(Main.getVarNumber(element.charAt(0)));
+            char[] variables = Vector.getVariables(vectorID);
+            for(int i=0; i<variables.length; ++i) {
+                if(variables[i] == element.charAt(0)) {
+                    return new Variable(i,vectorID);
+                }
+            }
         } else if(type == StackElement.Types.PARENTHESIS) {
             try {
                 return new Parenthesis(element.charAt(0));
@@ -142,7 +147,7 @@ public class Parser {
     }
 
     public static char[] parseVariables(String variables) {
-        variables = Parser.removeSpaces(variables) + ",";
+        /*variables = Parser.removeSpaces(variables) + ",";
         ArrayList<Character> outArr = new ArrayList<>();
         for(int i=0; i<variables.length(); ++i) {
             if(variables.charAt(i) == ',') {
@@ -153,7 +158,42 @@ public class Parser {
         for(int i=0; i<outArr.size(); ++i) {
             out[i] = outArr.get(i).charValue();
         }
+        return out;*/
+        String[] separated = separateCSV(variables);
+        char[] out = new char[separated.length];
+        for(int i=0; i<separated.length; ++i) {
+            out[i] = separated[i].charAt(0);
+        }
         return out;
+    }
+
+    public static String[] separateCSV(String csv) {
+        csv = removeSpaces(csv);
+        ArrayList<Integer> indices = new ArrayList<>();
+        indices.add(new Integer(-1));
+        for(int i=0; i<csv.length(); ++i) {
+            if(csv.charAt(i) == ',') {
+                indices.add(new Integer(i));
+            }
+        }
+        indices.add(new Integer(csv.length()));
+
+        String[] out = new String[indices.size()-1];
+        for(int i=1; i<indices.size(); ++i) {
+            out[i-1] = csv.substring(indices.get(i-1)+1,indices.get(i));
+        }
+        return out;
+    }
+
+    public static String toSV(Object[] objects, String delimiter) {
+        String csv = "";
+        for(int i=0; i<objects.length; ++i) {
+            csv += objects[i].toString();
+            if(i != objects.length-1) {
+                csv += delimiter;
+            }
+        }
+        return csv;
     }
 
     /*public static int parentheseMatch(String s, int index) {
