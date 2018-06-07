@@ -1,4 +1,3 @@
-//verified
 public class Parenthesis extends StackElement {
     private Side side;
 

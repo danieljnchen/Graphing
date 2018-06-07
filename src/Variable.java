@@ -1,4 +1,3 @@
-//verified
 public class Variable extends StackElement {
     private int varNumber;
     private int vectorID;
@@ -9,6 +8,6 @@ public class Variable extends StackElement {
         return var[varNumber];
     }
     public String toString() {
-        return String.valueOf(Vector.getVariables(vectorID)[varNumber]);
+        return String.valueOf(VectorFunction.getVariables(vectorID)[varNumber]);
     }
 }

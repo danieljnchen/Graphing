@@ -1,52 +1,36 @@
-import java.util.ArrayList;
+public class Vector extends Matrix2D {
+    public Vector(int rows) {
+        super(rows,1);
+    }
 
-public class Vector {
-    private static ArrayList<char[]> variablesList = new ArrayList<>();
-    private int vectorID;
-    private Function[] functions;
+    public Vector(double[] matrix) {
+        super(vectorToMatrix(matrix));
+    }
 
-    public Vector(String[] functions, char[] variables) {
-        this.functions = new Function[functions.length];
-        variablesList.add(variables);
-        vectorID = variablesList.size()-1;
-        for(int i=0; i<functions.length; ++i) {
-            this.functions[i] = new Function(functions[i],vectorID);
+    public static double[][] vectorToMatrix(double[] matrix) {
+        double[][] wrapperMatrix = new double[matrix.length][1];
+        for(int i=0; i<matrix.length; ++i) {
+            wrapperMatrix[i][0] = matrix[i];
         }
+        return wrapperMatrix;
     }
 
-    public Matrix2D evaluate(double[] variableValues) throws WrongParamNumberException {
-        if(variablesList.get(vectorID).length != variableValues.length) {
-            throw new WrongParamNumberException();
+    public double getElement(int row) {
+        return super.getElement(row,0);
+    }
+
+    public static double getMagnitude(Vector v) throws IncompatibleMatricesException {
+        return Math.sqrt(dot(v, v));
+    }
+
+    public static double dot(Vector a, Vector b) throws IncompatibleMatricesException {
+        if(a.getRows() != b.getRows()) {
+            throw new IncompatibleMatricesException();
         }
-
-        double[] out = new double[functions.length];
-        for(int i=0; i<functions.length; ++i) {
-            out[i] = functions[i].evaluate(variableValues);
+        double out = 0;
+        for(int r=0; r<a.getRows(); ++r) {
+            out += a.getElement(r)*b.getElement(r);
         }
-        return new Matrix2D(out);
-    }
-
-    public int dimension() {
-        return functions.length;
-    }
-
-    public char[] getVariables() {
-        return variablesList.get(vectorID);
-    }
-
-    public static char[] getVariables(int vectorID) {
-        return variablesList.get(vectorID);
-    }
-
-    @Override
-    public String toString() {
-        String vars = "";
-        for(int i=0; i<variablesList.get(vectorID).length; ++i) {
-            vars += String.valueOf(variablesList.get(vectorID)[i]);
-            if(i != variablesList.get(vectorID).length-1) {
-                vars += ",";
-            }
-        }
-        return "F(" + vars + ") = " + "(" + Parser.toSV(functions,";") + ")";
+        return out;
     }
 }

@@ -1,6 +1,4 @@
-//verified
 public class StackDouble extends StackElement {
-    public static final StackDouble ZERO = new StackDouble(0);
     double value;
 
     public StackDouble(double value) {

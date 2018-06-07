@@ -1,4 +1,3 @@
-//verified
 public class Operation extends StackElement {
     private Operations operation;
     private int priority;

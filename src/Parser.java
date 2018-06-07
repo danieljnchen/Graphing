@@ -29,23 +29,33 @@ public class Parser {
        ArrayList<StackElement> out = new ArrayList<>();
        Stack operationStack = new Stack();
 
+       StackElement previous = new StackDouble(0);
        for(int i=0; i<infix.size(); ++i) {
            StackElement curr = infix.get(i);
            if(curr instanceof Operation) {
                Operation operation = (Operation) curr;
-               StackElement next = operationStack.peek();
-               if((next == null) || (next instanceof Parenthesis)) {
-               } else if(operation.getPriority() <= ((Operation) next).getPriority()) {
-                   while(true) {
-                       StackElement top = operationStack.peek();
-                       if((top instanceof Operation) && (operation.getPriority() <= ((Operation) top).getPriority())) {
-                           out.add(operationStack.pop());
-                       } else {
-                           break;
+
+               while(true) {
+                   if((operation.getOperation() == Operation.Operations.SUBTRACT) && (i == 0 || (previous instanceof Parenthesis) || (previous instanceof Operation))) {
+                       out.add(new StackDouble(-1));
+                       operationStack.push(new Operation(Operation.Operations.MULTIPLY));
+                       break;
+                   }
+                   StackElement next = operationStack.peek();
+                   if((next == null) || (next instanceof Parenthesis)) {
+                   } else if(operation.getPriority() <= ((Operation) next).getPriority()) {
+                       while(true) {
+                           StackElement top = operationStack.peek();
+                           if((top instanceof Operation) && (operation.getPriority() <= ((Operation) top).getPriority())) {
+                               out.add(operationStack.pop());
+                           } else {
+                               break;
+                           }
                        }
                    }
+                   operationStack.push(operation);
+                   break;
                }
-               operationStack.push(operation);
            } else if(curr instanceof Parenthesis) {
                if(((Parenthesis) curr).getSide() == Parenthesis.Side.RIGHT) {
                    while (true) {
@@ -63,6 +73,7 @@ public class Parser {
            } else {
                out.add(curr);
            }
+           previous = curr;
        }
        while(true) {
            StackElement curr = operationStack.pop();
@@ -106,7 +117,7 @@ public class Parser {
         if(type == StackElement.Types.DOUBLE) {
             return new StackDouble(Double.valueOf(element));
         } else if(type == StackElement.Types.VARIABLE) {
-            char[] variables = Vector.getVariables(vectorID);
+            char[] variables = VectorFunction.getVariables(vectorID);
             for(int i=0; i<variables.length; ++i) {
                 if(variables[i] == element.charAt(0)) {
                     return new Variable(i,vectorID);
