@@ -3,6 +3,7 @@ public class Variable extends StackElement {
     private int vectorID;
     public Variable(int varNumber, int vectorID) {
         this.varNumber = varNumber;
+        this.vectorID = vectorID;
     }
     public double evaluate(double[] var) {
         return var[varNumber];

@@ -19,6 +19,10 @@ public class Vector extends Matrix2D {
         return super.getElement(row,0);
     }
 
+    public void setElement(int row, double in) {
+        super.setElement(row,0,in);
+    }
+
     public static double getMagnitude(Vector v) throws IncompatibleMatricesException {
         return Math.sqrt(dot(v, v));
     }

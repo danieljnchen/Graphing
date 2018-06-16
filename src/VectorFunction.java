@@ -14,6 +14,29 @@ public class VectorFunction {
         }
     }
 
+    public VectorFunction(String[] functions, char[] variables, int minDimension) {
+        String[] finalFunctions;
+        if(functions.length < minDimension) {
+            finalFunctions = new String[minDimension];
+            for(int i=0; i<minDimension; ++i) {
+                if(i<functions.length) {
+                    finalFunctions[i] = functions[i];
+                } else {
+                    finalFunctions[i] = "0";
+                }
+            }
+            this.functions = new Function[minDimension];
+        } else {
+            this.functions = new Function[functions.length];
+            finalFunctions = functions;
+        }
+        variablesList.add(variables);
+        vectorID = variablesList.size()-1;
+        for(int i=0; i<this.functions.length; ++i) {
+            this.functions[i] = new Function(finalFunctions[i],vectorID);
+        }
+    }
+
     public Vector evaluate(double[] variableValues) throws WrongParamNumberException {
         if(variablesList.get(vectorID).length != variableValues.length) {
             throw new WrongParamNumberException();
@@ -32,6 +55,10 @@ public class VectorFunction {
 
     public char[] getVariables() {
         return variablesList.get(vectorID);
+    }
+
+    public int getVarNum() {
+        return variablesList.get(vectorID).length;
     }
 
     public static char[] getVariables(int vectorID) {

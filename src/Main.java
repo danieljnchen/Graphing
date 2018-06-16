@@ -32,6 +32,7 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Grapher");
         primaryStage.getIcons().add(new Image("/Icon.jpg"));
@@ -69,12 +70,12 @@ public class Main extends Application {
         TextField vectorTextField = new TextField();
         TextField variablesTextField = new TextField();
         TextField variableValuesTextField = new TextField();
-        TextField rotationAngleTextField = new TextField();
+        //TextField rotationAngleTextField = new TextField();
 
         //Buttons
         Button updateVectorFunction = new Button("Update VectorFunction");
         updateVectorFunction.setOnAction(actionEvent -> {
-            currentVectorFunction = new VectorFunction(Parser.separateCSV(vectorTextField.getText()),Parser.parseVariables(variablesTextField.getText()));
+            currentVectorFunction = new VectorFunction(Parser.separateCSV(vectorTextField.getText()),Parser.parseVariables(variablesTextField.getText()),3);
             vectorText.setText("Current vector: " + currentVectorFunction.toString());
 
             char[] vars = currentVectorFunction.getVariables();
@@ -99,10 +100,10 @@ public class Main extends Application {
             }
         });
 
-        Button updateRotationAngle = new Button("Update Rotation Angle");
+        /*Button updateRotationAngle = new Button("Update Rotation Angle");
         updateRotationAngle.setOnAction(actionEvent -> {
             graph.setRotationMatrix(Math.toRadians(Double.parseDouble(rotationAngleTextField.getText())));
-        });
+        });*/
 
         Button updateGraph = new Button("Update Graph");
         updateGraph.setOnAction(actionEvent -> {
@@ -124,7 +125,7 @@ public class Main extends Application {
 
         HBox graphOptions = new HBox();
         graphOptions.setSpacing(5);
-        graphOptions.getChildren().addAll(new Text("Rotation Angle: "),rotationAngleTextField,updateRotationAngle,updateGraph);
+        graphOptions.getChildren().addAll(/*new Text("Rotation Angle: "),rotationAngleTextField,updateRotationAngle,*/updateGraph);
 
         VBox vector = new VBox();
         vector.setLayoutX(10);

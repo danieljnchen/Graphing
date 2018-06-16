@@ -32,10 +32,14 @@ public class Function {
 
 
     public String toString() {
-        String out = "";
+        /*String out = "";
         for(StackElement s : function) {
             out = out + s.toString() + ",";
+        }*/
+        StackElement[] functionArr = new StackElement[function.size()];
+        for(int i=0; i<function.size(); ++i) {
+            functionArr[i] = function.get(i);
         }
-        return out.substring(0,out.length()-1);
+        return Parser.toSV(functionArr,",");
     }
 }

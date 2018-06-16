@@ -20,7 +20,7 @@ public class Matrix2D {
         }
         return matrix[row][col];
     }
-    public void setElement(double in, int row, int col) throws ArrayIndexOutOfBoundsException {
+    public void setElement(int row, int col, double in) throws ArrayIndexOutOfBoundsException {
         if(row >= getRows() || col >= getCols()) {
             throw new ArrayIndexOutOfBoundsException();
         }
@@ -35,6 +35,14 @@ public class Matrix2D {
     public Vector getRow(int row) throws ArrayIndexOutOfBoundsException {
         return new Vector(matrix[row]);
     }
+    public void setRow(int row, Vector v) throws InvalidMatrixException {
+        if(v.getRows() != getCols()) {
+            throw new InvalidMatrixException();
+        }
+        for(int i=0; i<getCols(); ++i) {
+            matrix[row][i] = v.getElement(i);
+        }
+    }
     public Vector getCol(int col) throws ArrayIndexOutOfBoundsException {
         double[] out = new double[getRows()];
         for(int r=0; r<getRows(); ++r) {
@@ -46,7 +54,7 @@ public class Matrix2D {
         Matrix2D out = new Matrix2D(getCols(),getRows());
         for(int r=0; r<getRows(); ++r) {
             for(int c=0; c<getCols(); ++c) {
-                out.setElement(getElement(r,c),c,r);
+                out.setElement(c,r,getElement(r,c));
             }
         }
         return out;
@@ -61,6 +69,17 @@ public class Matrix2D {
         }
     }
 
+    @Override
+    public Matrix2D clone() {
+        double[][] out = new double[getRows()][getCols()];
+        for(int r=0; r<getRows(); ++r) {
+            for(int c=0; c<getCols(); ++c) {
+                out[r][c] = getElement(r,c);
+            }
+        }
+        return new Matrix2D(out);
+    }
+
     public static Matrix2D add(Matrix2D a, Matrix2D b) throws IncompatibleMatricesException {
         if(a.getRows() != b.getRows() || a.getCols() != b.getCols()) {
             throw new IncompatibleMatricesException();
@@ -68,7 +87,7 @@ public class Matrix2D {
         Matrix2D out = new Matrix2D(a.getRows(),a.getCols());
         for(int r=0; r<a.getRows(); ++r) {
             for(int c=0; c<a.getCols(); ++c) {
-                out.setElement(a.getElement(r,c)+b.getElement(r,c), r, c);
+                out.setElement(r,c,a.getElement(r,c)+b.getElement(r,c));
             }
         }
         return out;
@@ -82,7 +101,7 @@ public class Matrix2D {
 
         for(int r=0; r<a.getRows(); ++r) {
             for(int c=0; c<b.getCols(); ++c) {
-                out.setElement(Vector.dot(a.getRow(r),b.getCol(c)),r,c);
+                out.setElement(r,c,Vector.dot(a.getRow(r),b.getCol(c)));
             }
         }
 
@@ -93,10 +112,120 @@ public class Matrix2D {
         Matrix2D out = new Matrix2D(a.getRows(),a.getCols());
         for(int r=0; r<a.getRows(); ++r) {
             for(int c=0; c<a.getCols(); ++c) {
-                out.setElement(a.getElement(r,c)*k,r,c);
+                out.setElement(r,c,a.getElement(r,c)*k);
             }
         }
         return out;
+    }
+
+    public void invertMatrix() throws InvalidMatrixException {
+        if (Math.abs(getDeterminant()) > Math.pow(10, -6)) {
+            throw new InvalidMatrixException();
+        }
+
+        Matrix2D b = new Matrix2D(getRows(), getCols() * 2);
+        for (int r = 0; r < getRows(); ++r) {
+            for (int c = 0; c < getCols(); ++c) {
+                b.setElement(r, c, getElement(r, c));
+            }
+        }
+        for (int i = 0; i < getRows(); ++i) {
+            b.setElement(getRows() + i, getCols() + i, 1);
+        }
+
+        b.rref();
+
+        for(int r=0; r<getRows(); ++r) {
+            for(int c=0; c<getCols(); ++c) {
+                setElement(r,c,b.getElement(r,c+getCols()));
+            }
+        }
+    }
+
+    public Matrix2D rrefPreserveMatrix(Matrix2D a) {
+        Matrix2D out = a.clone();
+        out.rref();
+        return out;
+    }
+
+    public void rref() {
+        int colsDone = 0;
+        for(int c=0; c<getCols() && c<getRows(); ++c) {
+            for(int r=colsDone; r<getRows(); ++r) {
+                if(getElement(r,c) != 0) {
+                    multiplyRow(r,1/getElement(r,c));
+                    swapRows(r,colsDone);
+                    for(int ri=0; ri<getRows(); ++ri) {
+                        if(ri == colsDone) {
+                            continue;
+                        }
+                        addRow(ri,colsDone,getElement(ri,c)*-1);
+                    }
+                    ++colsDone;
+                    break;
+                }
+            }
+        }
+    }
+
+    public double getDeterminant() throws InvalidMatrixException {
+        if(getRows() != getCols()) {
+            throw new InvalidMatrixException("Matrix is not square");
+        }
+        if(getRows() == 2) {
+            return getElement(0,0)*getElement(1,1) - getElement(0,1)*getElement(1,0);
+        } else if(getRows() == 1) {
+            return getElement(0,0);
+        } else if(getRows() == 0) {
+            throw new InvalidMatrixException("Matrix has no elements");
+        } else {
+            double out = 0;
+            for(int c=0; c<getCols(); ++c) {
+                out += getElement(0,c)*getSubmatrix(0,c).getDeterminant()*Math.pow(-1,c);
+            }
+            return out;
+        }
+    }
+
+    public Matrix2D getSubmatrix(int row, int col) throws ArrayIndexOutOfBoundsException {
+        if(row<0 || row>=getRows() || col<0 || col>= getCols()) {
+            throw new ArrayIndexOutOfBoundsException();
+        }
+        Matrix2D out = new Matrix2D(getRows()-1,getCols()-1);
+        for(int r=0; r<out.getRows(); ++r) {
+            for(int c=0; c<out.getCols(); ++c) {
+                out.setElement(r,c,getElement(r+((r>=row)?1:0),c+((c>=col)?1:0)));
+            }
+        }
+        return out;
+    }
+
+    /**
+     * @param row1
+     * @param row2
+     * @param scalar
+     * @returns row1 + scalar*row2
+     */
+    public void addRow(int row1, int row2, double scalar) {
+        for(int c=0; c<getCols(); ++c) {
+            setElement(row1,c,getElement(row1,c)+getElement(row2,c)*scalar);
+        }
+    }
+    public void multiplyRow(int row, double scalar) {
+        try {
+            setRow(row,Matrix2D.multiplyScalar(getRow(row), scalar).getCol(0));
+        } catch(InvalidMatrixException e) {
+            e.printStackTrace();
+        }
+    }
+    public void swapRows(int row1, int row2) {
+        Vector tempRow = getRow(row1);
+        try {
+            setRow(row1,getRow(row2));
+            setRow(row2,tempRow);
+        } catch(InvalidMatrixException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

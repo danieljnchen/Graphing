@@ -101,6 +101,7 @@ public class Parser {
         }
     }
 
+    //TODO make more efficient
     public static String removeSpaces(String function) {
         for (int i = 0; i < function.length();) {
             if (function.charAt(i) == ' ') {
