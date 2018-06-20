@@ -3,6 +3,23 @@ public class Matrix2D {
 
     public Matrix2D(double[][] matrix) {
         this.matrix = matrix;
+        int cols = 0;
+        for(int r=0; r<getRows(); ++r) {
+            if(matrix[r].length > cols) {
+                cols = matrix[r].length;
+            }
+        }
+        for(int r=0; r<getRows(); ++r) {
+            if(matrix[r].length < cols) {
+                double[] newRow = new double[cols];
+                for(int c=0; c<cols; ++c) {
+                    if(c < matrix[r].length) {
+                        newRow[c] = matrix[r][c];
+                    }
+                }
+                matrix[r] = newRow;
+            }
+        }
     }
     public Matrix2D(int rows, int cols) throws IndexOutOfBoundsException {
         if(rows < 0 || cols < 0) {
@@ -119,7 +136,7 @@ public class Matrix2D {
     }
 
     public void invert() throws InvalidMatrixException {
-        if (Math.abs(getDeterminant()) < Math.pow(10, -6) || getRows() != getCols()) {
+        if (Math.abs(getDeterminant()) < Math.pow(10, -6)) {
             throw new InvalidMatrixException();
         }
 
