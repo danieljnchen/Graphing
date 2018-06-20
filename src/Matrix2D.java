@@ -118,8 +118,8 @@ public class Matrix2D {
         return out;
     }
 
-    public void invertMatrix() throws InvalidMatrixException {
-        if (Math.abs(getDeterminant()) > Math.pow(10, -6)) {
+    public void invert() throws InvalidMatrixException {
+        if (Math.abs(getDeterminant()) < Math.pow(10, -6) || getRows() != getCols()) {
             throw new InvalidMatrixException();
         }
 
@@ -129,8 +129,8 @@ public class Matrix2D {
                 b.setElement(r, c, getElement(r, c));
             }
         }
-        for (int i = 0; i < getRows(); ++i) {
-            b.setElement(getRows() + i, getCols() + i, 1);
+        for (int r = 0; r < getRows(); ++r) {
+            b.setElement(r, getCols() + r, 1);
         }
 
         b.rref();
@@ -140,6 +140,21 @@ public class Matrix2D {
                 setElement(r,c,b.getElement(r,c+getCols()));
             }
         }
+    }
+
+    public Matrix2D getSubmatrix(int row1, int col1, int row2, int col2) throws InvalidParametersException {
+        if(row1>row2 || col1>col2 || row2>getRows() || col2>getCols()) {
+            throw new InvalidParametersException();
+        }
+
+        Matrix2D out = new Matrix2D(row2-row1,col2-col1);
+        for(int r=row1; r<row2; ++r) {
+            for(int c=col1; c<col2; ++c) {
+                out.setElement(r-row1,c-col1,getElement(r,c));
+            }
+        }
+
+        return out;
     }
 
     public Matrix2D rrefPreserveMatrix(Matrix2D a) {
