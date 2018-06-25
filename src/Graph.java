@@ -1,5 +1,6 @@
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 import java.util.ArrayList;
 
@@ -15,7 +16,8 @@ public class Graph {
     private double[] origin;
     //private Matrix2D rotationMatrix;
     public double[] bounds;
-    private Matrix2D basisVectors;
+    private Matrix2D transformationMatrix;
+    double scaleFactor;
 
     private ArrayList<Vector> graphPoints;
     private ArrayList<Vector> axesPoints;
@@ -31,11 +33,13 @@ public class Graph {
 
         axesPoints = new ArrayList<>();
 
-        for(double i=-10; i<=10; i+= .01) {
+        for(double i=-100; i<=100; i+= .01) {
             axesPoints.add(new Vector(new double[] {i,0,0}));
             axesPoints.add(new Vector(new double[] {0,i,0}));
             axesPoints.add(new Vector(new double[] {0,0,i}));
         }
+
+        scaleFactor = 1;
     }
 
     public void setVectorFunction(VectorFunction vectorFunction) {
@@ -51,14 +55,20 @@ public class Graph {
 
     public void setBasisVectors() {
         if(isVectorSet()) {
-            if(basisVectors == null) {
-                int dimension = vectorFunction.getDimension();
-                basisVectors = new Matrix2D(dimension,dimension);
-                for(int i=0; i<dimension; ++i) {
-                    basisVectors.setElement(i,i,1);
-                }
+            if(transformationMatrix == null) {
+                transformationMatrix = new IdentityMatrix(vectorFunction.getDimension());
+                //transformationMatrix = new Matrix2D(new double[][] {{Math.sqrt(3),Math.sqrt(3),Math.sqrt(3)},{0,Math.sqrt(3),-Math.sqrt(3)},{Math.sqrt(3),0,-Math.sqrt(3)}});
+            }
+            try {
+                transformationMatrix.invert();
+            } catch(InvalidMatrixException e) {
+                e.printStackTrace();
             }
         }
+    }
+
+    public void setScaleFactor(double scaleFactor) {
+        this.scaleFactor = scaleFactor;
     }
 
     public void setBounds() {
@@ -100,6 +110,12 @@ public class Graph {
         evaluateOverBounds(increment,new double[]{});
     }
 
+    /**
+     * A recursive function that evaluates over each bound
+     * @param increment a positive small double
+     * @param currentValues the boundaries that are 'fixed' for this recursion branch
+     * @returns void
+     */
     private void evaluateOverBounds(double increment, double[] currentValues) {
         int boundSet = currentValues.length;
         if(boundSet < bounds.length/2) {
@@ -135,14 +151,28 @@ public class Graph {
             }*/
 
             //function
-            gc.setFill(Color.DARKBLUE);
             evaluateOverBoundsStart(.1);
             for(Vector v : graphPoints) {
-                gc.fillOval(origin[0] + v.getElement(0)*10 - radius,origin[1] - v.getElement(1)*10 - radius, radius*2, radius*2);
+                try {
+                    Matrix2D transformed = Matrix2D.multiplyMatrices(Matrix2D.multiplyScalar(transformationMatrix,scaleFactor), v);
+                    //gc.fillOval(origin[0] + transformed.getElement(0,0) * 10 - radius, origin[1] - transformed.getElement(1,0) * 10 - radius, radius * 2, radius * 2);
+                    if(Math.abs(transformed.getElement(0,0)) < width/2 && Math.abs(transformed.getElement(1,0)) < height/2) {
+                        drawPoint(gc, transformed.getElement(0, 0), transformed.getElement(1, 0), radius, Color.DARKBLUE);
+                    }
+                } catch(IncompatibleMatricesException e) {
+                    e.printStackTrace();
+                }
             }
-            gc.setFill(Color.BLACK);
             for(Vector v : axesPoints) {
-                gc.fillOval(origin[0] + v.getElement(0) * 10 - radius, origin[1] - v.getElement(1) * 10 - radius, radius * 2, radius * 2);
+                try {
+                    Matrix2D transformed = Matrix2D.multiplyMatrices(transformationMatrix, v);
+                    //gc.fillOval(origin[0] + transformed.getElement(0,0) * 10 - radius, origin[1] - transformed.getElement(1,0) * 10 - radius, radius * 2, radius * 2);
+                    if(Math.abs(transformed.getElement(0,0)) < width/2 && Math.abs(transformed.getElement(1,0)) < height/2) {
+                        drawPoint(gc, transformed.getElement(0, 0), transformed.getElement(1, 0), radius, Color.BLACK);
+                    }
+                } catch(IncompatibleMatricesException e) {
+                    e.printStackTrace();
+                }
             }
             /*Vector lastVector = new Vector(vectorFunction.getDimension());
             try {
@@ -177,5 +207,10 @@ public class Graph {
                 }
             }*/
         }
+    }
+
+    public void drawPoint(GraphicsContext gc, double xPos, double yPos, double radius, Paint paint) {
+        gc.setFill(paint);
+        gc.fillOval(origin[0]+xPos-radius,origin[1]-yPos-radius,radius*2,radius*2);
     }
 }

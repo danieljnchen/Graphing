@@ -60,7 +60,7 @@ public class Matrix2D {
             matrix[row][i] = v.getElement(i);
         }
     }
-    public Vector getCol(int col) throws ArrayIndexOutOfBoundsException {
+    public Vector getColumn(int col) throws ArrayIndexOutOfBoundsException {
         double[] out = new double[getRows()];
         for(int r=0; r<getRows(); ++r) {
             out[r] = getElement(r,col);
@@ -118,7 +118,7 @@ public class Matrix2D {
 
         for(int r=0; r<a.getRows(); ++r) {
             for(int c=0; c<b.getCols(); ++c) {
-                out.setElement(r,c,Vector.dot(a.getRow(r),b.getCol(c)));
+                out.setElement(r,c,Vector.dot(a.getRow(r),b.getColumn(c)));
             }
         }
 
@@ -245,7 +245,7 @@ public class Matrix2D {
     }
     public void multiplyRow(int row, double scalar) {
         try {
-            setRow(row,Matrix2D.multiplyScalar(getRow(row), scalar).getCol(0));
+            setRow(row,Matrix2D.multiplyScalar(getRow(row), scalar).getColumn(0));
         } catch(InvalidMatrixException e) {
             e.printStackTrace();
         }

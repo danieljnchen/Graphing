@@ -1,5 +1,10 @@
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.animation.TimelineBuilder;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -15,6 +20,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class Main extends Application {
     private static final double width = 925;
@@ -42,6 +48,10 @@ public class Main extends Application {
         root.getChildren().add(canvas);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
+
+        /*TimelineBuilder.create().keyFrames(new KeyFrame(Duration.seconds(5), actionEvent -> {
+                primaryStage.toFront();
+        })).cycleCount(Timeline.INDEFINITE).build().play();*/
 
         graph = new Graph(graphXPos,graphYPos,graphWidth,graphHeight,null);
         gc.clearRect(0,0,width,height);
@@ -137,6 +147,8 @@ public class Main extends Application {
         canvas.addEventFilter(MouseEvent.MOUSE_DRAGGED, mouseEvent -> {
 
         });
+
+        //canvas.addEventFilter(MouseEvent.MOUSE_CLICKED, mouseEvent -> primaryStage.toFront());
 
         new AnimationTimer() {
             public void handle(long currentNanoTime) {
